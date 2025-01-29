@@ -587,9 +587,11 @@ class _BetterPlayerCupertinoControlsState
   }
 
   Future<void> _initialize() async {
-    _controller!.addListener(_updateState);
 
-    _updateState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller!.addListener(_updateState);
+      _updateState();
+    });
 
     if ((_controller!.value.isPlaying) ||
         _betterPlayerController!.betterPlayerConfiguration.autoPlay) {
@@ -626,7 +628,7 @@ class _BetterPlayerCupertinoControlsState
       child: Padding(
         padding: const EdgeInsets.only(right: 12.0),
         child: BetterPlayerCupertinoVideoProgressBar(
-          _controller,
+          // _controller,
           _betterPlayerController,
           onDragStart: () {
             _hideTimer?.cancel();

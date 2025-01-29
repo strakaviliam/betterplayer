@@ -53,8 +53,9 @@ class _BetterPlayerSubtitlesDrawerState
       _configuration = setupDefaultConfiguration();
     }
 
-    widget.betterPlayerController.videoPlayerController!
-        .addListener(_updateState);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.betterPlayerController.videoPlayerController!.addListener(_updateState);
+    });
 
     _outerTextStyle = TextStyle(
         fontSize: _configuration!.fontSize,

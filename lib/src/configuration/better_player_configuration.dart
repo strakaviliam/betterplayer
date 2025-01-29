@@ -118,6 +118,9 @@ class BetterPlayerConfiguration {
   ///Default value is false.
   final bool useRootNavigator;
 
+  final bool zoomAndPan;
+  final double maxScale;
+
   const BetterPlayerConfiguration({
     this.aspectRatio,
     this.autoPlay = false,
@@ -131,6 +134,8 @@ class BetterPlayerConfiguration {
     this.errorBuilder,
     this.allowedScreenSleep = true,
     this.fullScreenAspectRatio,
+    this.zoomAndPan = false,
+    this.maxScale = 1.0,
     this.deviceOrientationsOnFullScreen = const [
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,

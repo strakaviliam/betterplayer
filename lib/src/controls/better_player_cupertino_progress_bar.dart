@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 class BetterPlayerCupertinoVideoProgressBar extends StatefulWidget {
   BetterPlayerCupertinoVideoProgressBar(
-    this.controller,
     this.betterPlayerController, {
     BetterPlayerProgressColors? colors,
     this.onDragEnd,
@@ -18,7 +17,6 @@ class BetterPlayerCupertinoVideoProgressBar extends StatefulWidget {
   })  : colors = colors ?? BetterPlayerProgressColors(),
         super(key: key);
 
-  final VideoPlayerController? controller;
   final BetterPlayerController? betterPlayerController;
   final BetterPlayerProgressColors colors;
   final Function()? onDragStart;
@@ -32,21 +30,12 @@ class BetterPlayerCupertinoVideoProgressBar extends StatefulWidget {
   }
 }
 
-class _VideoProgressBarState
-    extends State<BetterPlayerCupertinoVideoProgressBar> {
-  _VideoProgressBarState() {
-    listener = () {
-      if (mounted) setState(() {});
-    };
-  }
+class _VideoProgressBarState extends State<BetterPlayerCupertinoVideoProgressBar> {
 
   late VoidCallback listener;
   bool _controllerWasPlaying = false;
 
-  VideoPlayerController? get controller => widget.controller;
-
-  BetterPlayerController? get betterPlayerController =>
-      widget.betterPlayerController;
+  BetterPlayerController? betterPlayerController;
 
   bool shouldPlayAfterDragEnd = false;
   Duration? lastSeek;
@@ -55,28 +44,35 @@ class _VideoProgressBarState
   @override
   void initState() {
     super.initState();
-    controller!.addListener(listener);
+
+    betterPlayerController = widget.betterPlayerController;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      listener = () {
+        if (mounted) setState(() {});
+      };
+      betterPlayerController?.videoPlayerController!.addListener(listener);
+    });
   }
 
   @override
   void deactivate() {
-    controller!.removeListener(listener);
+    betterPlayerController?.videoPlayerController!.removeListener(listener);
     _cancelUpdateBlockTimer();
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool enableProgressBarDrag = betterPlayerController!
-        .betterPlayerControlsConfiguration.enableProgressBarDrag;
+    final bool enableProgressBarDrag = betterPlayerController!.betterPlayerControlsConfiguration.enableProgressBarDrag;
     return GestureDetector(
       onHorizontalDragStart: (DragStartDetails details) {
-        if (!controller!.value.initialized || !enableProgressBarDrag) {
+        if (!betterPlayerController!.videoPlayerController!.value.initialized || !enableProgressBarDrag) {
           return;
         }
-        _controllerWasPlaying = controller!.value.isPlaying;
+        _controllerWasPlaying = betterPlayerController!.videoPlayerController!.value.isPlaying;
         if (_controllerWasPlaying) {
-          controller!.pause();
+          betterPlayerController?.videoPlayerController!.pause();
         }
 
         if (widget.onDragStart != null) {
@@ -84,7 +80,7 @@ class _VideoProgressBarState
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!controller!.value.initialized || !enableProgressBarDrag) {
+        if (!betterPlayerController!.videoPlayerController!.value.initialized || !enableProgressBarDrag) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
@@ -108,7 +104,7 @@ class _VideoProgressBarState
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!controller!.value.initialized || !enableProgressBarDrag) {
+        if (!betterPlayerController!.videoPlayerController!.value.initialized || !enableProgressBarDrag) {
           return;
         }
 
@@ -147,11 +143,23 @@ class _VideoProgressBarState
   }
 
   VideoPlayerValue _getValue() {
+    return betterPlayerController!.videoPlayerController!.value;
     if (lastSeek != null) {
-      return controller!.value.copyWith(position: lastSeek);
+      return betterPlayerController!.videoPlayerController!.value.copyWith(position: lastSeek);
     } else {
-      return controller!.value;
+      return betterPlayerController!.videoPlayerController!.value;
     }
+  }
+
+  Duration? _getDuration() {
+    Duration? duration;
+    if(betterPlayerController!.videoPlayerController!.value.duration != null) {
+      duration = betterPlayerController!.videoPlayerController!.value.duration!;
+      if(duration!.inSeconds == 0) {
+        duration = Duration(minutes: 60);
+      }
+    }
+    return duration;
   }
 
   void seekToRelativePosition(Offset globalPosition) async {
@@ -161,13 +169,13 @@ class _VideoProgressBarState
       final Offset tapPos = box.globalToLocal(globalPosition);
       final double relative = tapPos.dx / box.size.width;
       if (relative > 0) {
-        final Duration position = controller!.value.duration! * relative;
+        final Duration position = _getDuration()! * relative;
         lastSeek = position;
         await betterPlayerController!.seekTo(position);
         onFinishedLastSeek();
         if (relative >= 1) {
-          lastSeek = controller!.value.duration;
-          await betterPlayerController!.seekTo(controller!.value.duration!);
+          lastSeek = _getDuration()!;
+          await betterPlayerController!.seekTo(_getDuration()!);
           onFinishedLastSeek();
         }
       }
@@ -193,6 +201,17 @@ class _ProgressBarPainter extends CustomPainter {
     return true;
   }
 
+  Duration? _getDuration() {
+    Duration? duration;
+    if(value.duration != null) {
+      duration = value.duration!;
+      if(duration!.inSeconds == 0) {
+        duration = Duration(minutes: 60);
+      }
+    }
+    return duration;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     const barHeight = 5.0;
@@ -209,26 +228,35 @@ class _ProgressBarPainter extends CustomPainter {
       ),
       colors.backgroundPaint,
     );
-    if (!value.initialized) {
+
+    if (!value.initialized || _getDuration() == null) {
       return;
     }
-    final double playedPartPercent =
-        value.position.inMilliseconds / value.duration!.inMilliseconds;
-    final double playedPart =
-        playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
+
+    final double playedPartPercent = value.position.inMilliseconds / _getDuration()!.inMilliseconds;
+    final double playedPart = playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
     for (final DurationRange range in value.buffered) {
-      final double start = range.startFraction(value.duration!) * size.width;
-      final double end = range.endFraction(value.duration!) * size.width;
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromPoints(
-            Offset(start, baseOffset),
-            Offset(end, baseOffset + barHeight),
+
+      final double start = range.startFraction(_getDuration()!) * size.width;
+      final double end = range.endFraction(_getDuration()!) * size.width;
+
+      if(start == double.nan || start == double.infinity || end == double.nan || end == double.infinity) {
+        return;
+      }
+
+      try {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromPoints(
+              Offset(start, baseOffset),
+              Offset(end, baseOffset + barHeight),
+            ),
+            const Radius.circular(4.0),
           ),
-          const Radius.circular(4.0),
-        ),
-        colors.bufferedPaint,
-      );
+          colors.bufferedPaint,
+        );
+      } catch (_) {}
+
     }
     canvas.drawRRect(
       RRect.fromRectAndRadius(
