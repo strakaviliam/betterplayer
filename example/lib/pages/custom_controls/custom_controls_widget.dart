@@ -30,7 +30,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.purple.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(15),
+                   borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -58,7 +58,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
               height: 50,
               decoration: BoxDecoration(
                 color: Colors.purple.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(15),
+               borderRadius: BorderRadius.all(Radius.circular(15)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

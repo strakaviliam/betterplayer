@@ -174,7 +174,7 @@ class _BetterPlayerCupertinoControlsState
         alignment: Alignment.bottomCenter,
         margin: EdgeInsets.all(marginSize),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+         borderRadius: BorderRadius.all(Radius.circular(10)),
           child: Container(
             height: barHeight,
             decoration: BoxDecoration(
@@ -251,7 +251,7 @@ class _BetterPlayerCupertinoControlsState
         opacity: controlsNotVisible ? 0.0 : 1.0,
         duration: _controlsConfiguration.controlsHideTime,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+         borderRadius: BorderRadius.all(Radius.circular(10)),
           child: Container(
             height: barHeight,
             padding: EdgeInsets.symmetric(
@@ -312,7 +312,7 @@ class _BetterPlayerCupertinoControlsState
         opacity: controlsNotVisible ? 0.0 : 1.0,
         duration: _controlsConfiguration.controlsHideTime,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
+         borderRadius: BorderRadius.all(Radius.circular(10)),
           child: Container(
             decoration: BoxDecoration(
               color: backgroundColor,
@@ -357,7 +357,7 @@ class _BetterPlayerCupertinoControlsState
         opacity: controlsNotVisible ? 0.0 : 1.0,
         duration: _controlsConfiguration.controlsHideTime,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
+         borderRadius: BorderRadius.all(Radius.circular(10)),
           child: Container(
             decoration: BoxDecoration(
               color: backgroundColor,
@@ -560,7 +560,7 @@ class _BetterPlayerCupertinoControlsState
                 margin: const EdgeInsets.only(bottom: 4, right: 8),
                 decoration: BoxDecoration(
                   color: _controlsConfiguration.controlBarColor,
-                  borderRadius: BorderRadius.circular(8),
+                 borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
@@ -782,7 +782,7 @@ class _BetterPlayerCupertinoControlsState
               opacity: controlsNotVisible ? 0.0 : 1.0,
               duration: _controlsConfiguration.controlsHideTime,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+               borderRadius: BorderRadius.all(Radius.circular(10)),
                 child: Container(
                   height: barHeight,
                   padding: EdgeInsets.only(

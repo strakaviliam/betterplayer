@@ -982,7 +982,7 @@ class ClosedCaption extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: const Color(0xB8000000),
-            borderRadius: BorderRadius.circular(2.0),
+           borderRadius: BorderRadius.all(Radius.circular(2.0)),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2.0),

@@ -407,7 +407,7 @@ class _BetterPlayerMaterialControlsState
           child: Container(
             decoration: BoxDecoration(
               color: Colors.transparent,
-              borderRadius: BorderRadius.circular(48),
+             borderRadius: BorderRadius.all(Radius.circular(48)),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -496,7 +496,7 @@ class _BetterPlayerMaterialControlsState
                     right: 24),
                 decoration: BoxDecoration(
                   color: _controlsConfiguration.controlBarColor,
-                  borderRadius: BorderRadius.circular(16),
+                 borderRadius: BorderRadius.all(Radius.circular(16)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
